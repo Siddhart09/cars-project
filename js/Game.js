@@ -8,6 +8,7 @@ class Game {
     this.leader1 = createElement("h2");
     this.leader2 = createElement("h2");
     this.playerMoving = false;
+    this.left_arrowkeyactive = false
   }
 
   getState() {
@@ -43,7 +44,7 @@ class Game {
     fuels = new Group();
     powerCoins = new Group();
     obstacle1 = new Group(); 
-    obstacle2=new Group();
+    obstacle2 = new Group(); 
     var obstacle1Positions = [
       { x: width / 2 - 150, y: height - 1300, image: obstacle1Image },
       { x: width / 2 + 250, y: height - 1800, image: obstacle1Image },
@@ -53,7 +54,16 @@ class Game {
       { x: width / 2, y: height - 5300, image: obstacle1Image },
     ];
 
-  
+    var obstacle2Positions = [
+      { x: width / 2 + 250, y: height - 800, image: obstacle2Image },
+      { x: width / 2 - 180, y: height - 2300, image: obstacle2Image },
+      { x: width / 2, y: height - 2800, image: obstacle2Image },
+     
+      { x: width / 2 + 180, y: height - 3300, image: obstacle2Image },
+      { x: width / 2 + 250, y: height - 3800, image: obstacle2Image },
+      { x: width / 2 + 250, y: height - 4800, image: obstacle2Image },
+      { x: width / 2 - 180, y: height - 5500, image: obstacle2Image }
+    ];
     // Adding fuel sprite in the game
     this.addSprites(fuels, 4, fuelImage, 0.02);
 
@@ -66,7 +76,6 @@ class Game {
       0.04,
       obstacle1Positions
     );
-    var obstacle2Positions = [ { x: width / 2 + 250, y: height - 800, image: obstacle2Image }, { x: width / 2 - 180, y: height - 2300, image: obstacle2Image }, { x: width / 2, y: height - 2800, image: obstacle2Image }, { x: width / 2 + 180, y: height - 3300, image: obstacle2Image }, { x: width / 2 + 250, y: height - 3800, image: obstacle2Image }, { x: width / 2 + 250, y: height - 4800, image: obstacle2Image }, { x: width / 2 - 180, y: height - 5500, image: obstacle2Image } ];
     this.addSprites(
       obstacle2,
       obstacle2Positions.length,
@@ -74,7 +83,6 @@ class Game {
       0.04,
       obstacle2Positions
     );
-   
   }
 
   // C38 TA
@@ -151,6 +159,7 @@ class Game {
 
           this.handleFuel(index);
           this.handlePowerCoins(index);
+          this.handleobstaclecollision(index)
           
           // Changing camera position in y direction
           camera.position.x = cars[index - 1].position.x;
@@ -296,11 +305,13 @@ handlePlayerControls() {
   if (keyIsDown(LEFT_ARROW) && player.positionX > width / 3 - 50) {
     player.positionX -= 5;
     player.update();
+    this.left_arrowkeyactive = true
   }
 
   if (keyIsDown(RIGHT_ARROW) && player.positionX < width / 2 + 300) {
     player.positionX += 5;
     player.update();
+    this.left_arrowkeyactive = false
   }
 }
 showRank() {
@@ -321,5 +332,26 @@ showRank() {
       imageSize: "100x100",
       confirmButtonText: "Thanks For Playing"
     });
+  }
+  handleobstaclecollision(index){
+    if(cars[index-1].collide(obstacle1)|| cars[index-1].collide(obstacle2)){
+      if(this.left_arrowkeyactive)
+      {
+        player.positionX+=100
+        
+      }
+      else
+      {
+        player.positionX-=100
+      }
+      if(player.life>0){
+        player.life-=185/4
+      }
+      player.update()
+    }
+
+    
+      
+    
   }
 }
